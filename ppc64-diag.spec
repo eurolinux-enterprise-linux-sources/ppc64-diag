@@ -1,6 +1,6 @@
 Name:           ppc64-diag
 Version:        2.6.1
-Release:        2%{?dist}
+Release:        4%{?dist}
 Summary:        PowerLinux Platform Diagnostics
 URL:            http://sourceforge.net/projects/linux-diag/files/ppc64-diag/
 Group:          System Environment/Base
@@ -14,7 +14,6 @@ Requires:       servicelog, lsvpd
 # and powerpc-utils versions.
 Requires:	librtas >= 1.3.8
 Requires:	powerpc-utils >= 1.2.16
-Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Source0:        http://downloads.sourceforge.net/project/linux-diag/ppc64-diag/%{version}/%{name}-%{version}.tar.gz
 Source1:        rtas_errd.service
 Patch0:         ppc64-diag-2.4.2-messagecatalog-location.patch
@@ -22,6 +21,8 @@ Patch1:         ppc64-diag-2.4.2-chkconfig.patch
 Patch2:         ppc64-diag-2.4.3-scriptlocation.patch
 Patch3:         ppc64-diag-unusedvar.patch
 Patch4:         ppc64-diag-2.6.1-lpdscriptloc.patch
+Patch5:         ppc64-diag-2.6.1-verbose-build.patch
+Patch6:         ppc64-diag-2.6.1-mode.patch
 
 %description
 This package contains various diagnostic tools for PowerLinux.
@@ -43,9 +44,11 @@ administrators or connected service frameworks.
 %patch2 -p1 -b .script_loc
 %patch3 -p1 -b .unusevar
 %patch4 -p1 -b .lpdscriptloc
+%patch5 -p1 -b .verbose
+%patch6 -p1 -b .mode
 
 %build
-make %{?_smp_mflags}
+CFLAGS="%{optflags}" CXXFLAGS="%{optflags}" make %{?_smp_mflags}
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
@@ -58,11 +61,7 @@ install -m644 %{SOURCE1} $RPM_BUILD_ROOT/%{_unitdir}
 mkdir $RPM_BUILD_ROOT/%{_sysconfdir}/%{name}/ses_pages
 ln -sfv %{_sbindir}/usysattn $RPM_BUILD_ROOT/%{_sbindir}/usysfault
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 %files
-%defattr (-,root,root,-)
 %doc COPYRIGHT
 %dir %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/ses_pages
@@ -118,6 +117,14 @@ fi
 
 
 %changelog
+* Mon Mar 03 2014 Dan Horák <dhorak@redhat.com> - 2.6.1-4
+- modernize spec a bit and switch to verbose build in Makefiles
+- use system-wide CFLAGS during build (#1070784)
+- Resolves: #1070784
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 2.6.1-3
+- Mass rebuild 2013-12-27
+
 * Tue May 21 2013 Vasant Hegde <hegdevasant@linux.vnet.ibm.com> - 2.6.1-2
 - Add ncurses-devel as build dependency
 - Fix script location issue

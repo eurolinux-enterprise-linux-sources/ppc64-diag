@@ -1,0 +1,12 @@
+diff -up ppc64-diag-2.6.1/rtas_errd/dump.c.mode ppc64-diag-2.6.1/rtas_errd/dump.c
+--- ppc64-diag-2.6.1/rtas_errd/dump.c.mode	2014-03-03 18:17:51.941132822 +0100
++++ ppc64-diag-2.6.1/rtas_errd/dump.c	2014-03-03 18:18:00.121132015 +0100
+@@ -161,7 +161,7 @@ check_scanlog_dump(void)
+ 		goto scanlog_error;
+ 	}
+ 
+-	out = open(scanlog_filename, O_WRONLY | O_CREAT | O_TRUNC);
++	out = open(scanlog_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+ 	if (out <= 0) {
+ 		log_msg(NULL, "Could not open %s for writing, %s", 
+ 			scanlog_filename, strerror(errno));
